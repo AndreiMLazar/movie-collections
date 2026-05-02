@@ -1,4 +1,4 @@
-import { inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { of } from 'rxjs';
@@ -15,23 +15,26 @@ const PERSIST_ACTIONS = [
   CollectionsActions.updateCollectionSort,
 ];
 
-/** On app init, hydrate state from localStorage */
-export const loadCollectionsFromStorage = createEffect(
-  () => {
-    const storage = inject(StorageService);
-    const collections = storage.loadCollections();
-    return of(CollectionsActions.loadCollectionsFromStorage({ collections }));
-  },
-  { functional: true, dispatch: true }
-);
+@Injectable()
+export class CollectionsEffects {
+  private readonly actions$ = inject(Actions);
+  private readonly store = inject(Store);
+  private readonly storage = inject(StorageService);
 
-/** After every mutating action, persist to localStorage */
-export const persistCollections = createEffect(
-  (actions$ = inject(Actions), store = inject(Store), storage = inject(StorageService)) =>
-    actions$.pipe(
-      ofType(...PERSIST_ACTIONS),
-      withLatestFrom(store.select(selectCollections)),
-      tap(([, cols]) => storage.saveCollections(cols))
-    ),
-  { functional: true, dispatch: false }
-);
+  /** On app init, hydrate state from localStorage */
+  loadCollectionsFromStorage$ = createEffect(() => {
+    const collections = this.storage.loadCollections();
+    return of(CollectionsActions.loadCollectionsFromStorage({ collections }));
+  }, { dispatch: true });
+
+  /** After every mutating action, persist to localStorage */
+  persistCollections$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(...PERSIST_ACTIONS),
+        withLatestFrom(this.store.select(selectCollections)),
+        tap(([, cols]) => this.storage.saveCollections(cols))
+      ),
+    { dispatch: false }
+  );
+}

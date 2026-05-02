@@ -6,12 +6,7 @@ import { Action } from '@ngrx/store';
 
 import { TmdbService } from '../services/tmdb.service';
 import { MoviesPageActions, MoviesApiActions } from './movies.actions';
-import {
-  loadPopularMovies,
-  searchMovies,
-  applyFiltersEffect,
-  loadMoreMovies,
-} from './movies.effects';
+import { MoviesEffects } from './movies.effects';
 import {
   selectCurrentPage,
   selectSearchQuery,
@@ -58,11 +53,13 @@ function makeTmdbMock(partial: Partial<TmdbService> = {}): TmdbService {
 describe('Movies Effects', () => {
   let actions$: Observable<Action>;
   let tmdbService: TmdbService;
+  let effects: MoviesEffects;
 
   describe('loadPopularMovies', () => {
     beforeEach(() => {
       TestBed.configureTestingModule({
         providers: [
+          MoviesEffects,
           provideMockActions(() => actions$),
           provideMockStore({
             selectors: [
@@ -74,12 +71,13 @@ describe('Movies Effects', () => {
         ],
       });
       tmdbService = TestBed.inject(TmdbService);
+      effects = TestBed.inject(MoviesEffects);
     });
 
     it('calls discoverMovies and dispatches loadSuccess on success', (done) => {
       actions$ = of(MoviesPageActions.loadPopular({ page: 1 }));
 
-      TestBed.runInInjectionContext(loadPopularMovies).subscribe((action) => {
+      effects.loadPopularMovies$.subscribe((action) => {
         expect(tmdbService.discoverMovies).toHaveBeenCalledWith('popularity.desc', [], 1);
         expect(action).toEqual(
           MoviesApiActions.loadSuccess({
@@ -98,7 +96,7 @@ describe('Movies Effects', () => {
       );
       actions$ = of(MoviesPageActions.loadPopular({ page: 1 }));
 
-      TestBed.runInInjectionContext(loadPopularMovies).subscribe((action) => {
+      effects.loadPopularMovies$.subscribe((action) => {
         expect(action).toEqual(MoviesApiActions.loadFailure({ error: 'Network error' }));
         done();
       });
@@ -110,7 +108,7 @@ describe('Movies Effects', () => {
       );
       actions$ = of(MoviesPageActions.loadPopular({ page: 1 }));
 
-      TestBed.runInInjectionContext(loadPopularMovies).subscribe((action) => {
+      effects.loadPopularMovies$.subscribe((action) => {
         expect(action).toEqual(MoviesApiActions.loadFailure({ error: 'raw string error' }));
         done();
       });
@@ -120,7 +118,7 @@ describe('Movies Effects', () => {
       (tmdbService.discoverMovies as jest.Mock).mockReturnValue(throwError(() => ({ code: 500 })));
       actions$ = of(MoviesPageActions.loadPopular({ page: 1 }));
 
-      TestBed.runInInjectionContext(loadPopularMovies).subscribe((action) => {
+      effects.loadPopularMovies$.subscribe((action) => {
         expect(action).toEqual(
           MoviesApiActions.loadFailure({ error: 'An unexpected error occurred.' })
         );
@@ -133,17 +131,20 @@ describe('Movies Effects', () => {
     beforeEach(() => {
       TestBed.configureTestingModule({
         providers: [
+          MoviesEffects,
           provideMockActions(() => actions$),
+          provideMockStore(),
           { provide: TmdbService, useFactory: makeTmdbMock },
         ],
       });
       tmdbService = TestBed.inject(TmdbService);
+      effects = TestBed.inject(MoviesEffects);
     });
 
     it('calls tmdb.searchMovies with query and page, dispatches loadSuccess', (done) => {
       actions$ = of(MoviesPageActions.search({ query: 'inception', page: 1 }));
 
-      TestBed.runInInjectionContext(searchMovies).subscribe((action) => {
+      effects.searchMovies$.subscribe((action) => {
         expect(tmdbService.searchMovies).toHaveBeenCalledWith('inception', 1);
         expect(action).toEqual(
           MoviesApiActions.loadSuccess({
@@ -162,7 +163,7 @@ describe('Movies Effects', () => {
       );
       actions$ = of(MoviesPageActions.search({ query: 'bad', page: 1 }));
 
-      TestBed.runInInjectionContext(searchMovies).subscribe((action) => {
+      effects.searchMovies$.subscribe((action) => {
         expect(action).toEqual(MoviesApiActions.loadFailure({ error: 'Search failed' }));
         done();
       });
@@ -173,17 +174,20 @@ describe('Movies Effects', () => {
     beforeEach(() => {
       TestBed.configureTestingModule({
         providers: [
+          MoviesEffects,
           provideMockActions(() => actions$),
+          provideMockStore(),
           { provide: TmdbService, useFactory: makeTmdbMock },
         ],
       });
       tmdbService = TestBed.inject(TmdbService);
+      effects = TestBed.inject(MoviesEffects);
     });
 
     it('calls discoverMovies with selected genres and sort when applyFilters is dispatched', (done) => {
       actions$ = of(MoviesPageActions.applyFilters({ genreIds: [28, 12], sortBy: 'revenue.desc' }));
 
-      TestBed.runInInjectionContext(applyFiltersEffect).subscribe((action) => {
+      effects.applyFilters$.subscribe((action) => {
         expect(tmdbService.discoverMovies).toHaveBeenCalledWith('revenue.desc', [28, 12], 1);
         expect(action).toEqual(
           MoviesApiActions.loadSuccess({ movies: mockMovies, page: 1, totalPages: 5 })
@@ -195,7 +199,7 @@ describe('Movies Effects', () => {
     it('calls discoverMovies with default sort and no genres when clearFilters is dispatched', (done) => {
       actions$ = of(MoviesPageActions.clearFilters());
 
-      TestBed.runInInjectionContext(applyFiltersEffect).subscribe((action) => {
+      effects.applyFilters$.subscribe((action) => {
         expect(tmdbService.discoverMovies).toHaveBeenCalledWith('popularity.desc', [], 1);
         expect(action).toEqual(
           MoviesApiActions.loadSuccess({ movies: mockMovies, page: 1, totalPages: 5 })
@@ -210,7 +214,7 @@ describe('Movies Effects', () => {
       );
       actions$ = of(MoviesPageActions.applyFilters({ genreIds: [], sortBy: 'popularity.desc' }));
 
-      TestBed.runInInjectionContext(applyFiltersEffect).subscribe((action) => {
+      effects.applyFilters$.subscribe((action) => {
         expect(action).toEqual(MoviesApiActions.loadFailure({ error: 'Discover failed' }));
         done();
       });
@@ -222,6 +226,7 @@ describe('Movies Effects', () => {
       beforeEach(() => {
         TestBed.configureTestingModule({
           providers: [
+            MoviesEffects,
             provideMockActions(() => actions$),
             provideMockStore({
               selectors: [
@@ -235,6 +240,7 @@ describe('Movies Effects', () => {
           ],
         });
         tmdbService = TestBed.inject(TmdbService);
+        effects = TestBed.inject(MoviesEffects);
       });
 
       it('calls discoverMovies with nextPage and dispatches appendSuccess', (done) => {
@@ -243,7 +249,7 @@ describe('Movies Effects', () => {
 
         actions$ = of(MoviesPageActions.loadMore());
 
-        TestBed.runInInjectionContext(loadMoreMovies).subscribe((action) => {
+        effects.loadMoreMovies$.subscribe((action) => {
           expect(tmdbService.discoverMovies).toHaveBeenCalledWith('popularity.desc', [28], 3);
           expect(action).toEqual(
             MoviesApiActions.appendSuccess({ movies: mockMovies, page: 3, totalPages: 5 })
@@ -257,6 +263,7 @@ describe('Movies Effects', () => {
       beforeEach(() => {
         TestBed.configureTestingModule({
           providers: [
+            MoviesEffects,
             provideMockActions(() => actions$),
             provideMockStore({
               selectors: [
@@ -270,6 +277,7 @@ describe('Movies Effects', () => {
           ],
         });
         tmdbService = TestBed.inject(TmdbService);
+        effects = TestBed.inject(MoviesEffects);
       });
 
       it('calls searchMovies with nextPage and dispatches appendSuccess', (done) => {
@@ -278,7 +286,7 @@ describe('Movies Effects', () => {
 
         actions$ = of(MoviesPageActions.loadMore());
 
-        TestBed.runInInjectionContext(loadMoreMovies).subscribe((action) => {
+        effects.loadMoreMovies$.subscribe((action) => {
           expect(tmdbService.searchMovies).toHaveBeenCalledWith('matrix', 2);
           expect(action).toEqual(
             MoviesApiActions.appendSuccess({ movies: mockMovies, page: 2, totalPages: 5 })
@@ -292,6 +300,7 @@ describe('Movies Effects', () => {
       beforeEach(() => {
         TestBed.configureTestingModule({
           providers: [
+            MoviesEffects,
             provideMockActions(() => actions$),
             provideMockStore({
               selectors: [
@@ -305,6 +314,7 @@ describe('Movies Effects', () => {
           ],
         });
         tmdbService = TestBed.inject(TmdbService);
+        effects = TestBed.inject(MoviesEffects);
       });
 
       it('dispatches loadFailure when the request fails', (done) => {
@@ -313,7 +323,7 @@ describe('Movies Effects', () => {
         );
         actions$ = of(MoviesPageActions.loadMore());
 
-        TestBed.runInInjectionContext(loadMoreMovies).subscribe((action) => {
+        effects.loadMoreMovies$.subscribe((action) => {
           expect(action).toEqual(MoviesApiActions.loadFailure({ error: 'Load more failed' }));
           done();
         });

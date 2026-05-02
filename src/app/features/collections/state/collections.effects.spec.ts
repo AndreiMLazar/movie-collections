@@ -7,7 +7,7 @@ import { Action } from '@ngrx/store';
 import { StorageService } from '@core/services';
 import { CollectionsActions } from './collections.actions';
 import { selectCollections } from './collections.reducer';
-import { loadCollectionsFromStorage, persistCollections } from './collections.effects';
+import { CollectionsEffects } from './collections.effects';
 import type { Collection } from '../types';
 
 const collectionA: Collection = {
@@ -32,10 +32,16 @@ describe('Collections Effects', () => {
       const storageMock = makeStorageMock([collectionA]);
 
       TestBed.configureTestingModule({
-        providers: [{ provide: StorageService, useValue: storageMock }],
+        providers: [
+          CollectionsEffects,
+          provideMockActions(() => of()),
+          provideMockStore(),
+          { provide: StorageService, useValue: storageMock },
+        ],
       });
 
-      TestBed.runInInjectionContext(loadCollectionsFromStorage).subscribe((action) => {
+      const effects = TestBed.inject(CollectionsEffects);
+      effects.loadCollectionsFromStorage$.subscribe((action) => {
         expect(storageMock.loadCollections).toHaveBeenCalled();
         expect(action).toEqual(
           CollectionsActions.loadCollectionsFromStorage({ collections: [collectionA] })
@@ -48,10 +54,16 @@ describe('Collections Effects', () => {
       const storageMock = makeStorageMock([]);
 
       TestBed.configureTestingModule({
-        providers: [{ provide: StorageService, useValue: storageMock }],
+        providers: [
+          CollectionsEffects,
+          provideMockActions(() => of()),
+          provideMockStore(),
+          { provide: StorageService, useValue: storageMock },
+        ],
       });
 
-      TestBed.runInInjectionContext(loadCollectionsFromStorage).subscribe((action) => {
+      const effects = TestBed.inject(CollectionsEffects);
+      effects.loadCollectionsFromStorage$.subscribe((action) => {
         expect(action).toEqual(CollectionsActions.loadCollectionsFromStorage({ collections: [] }));
         done();
       });
@@ -90,6 +102,7 @@ describe('Collections Effects', () => {
 
         TestBed.configureTestingModule({
           providers: [
+            CollectionsEffects,
             provideMockActions(() => actions$),
             provideMockStore({
               selectors: [{ selector: selectCollections, value: [collectionA] }],
@@ -100,7 +113,8 @@ describe('Collections Effects', () => {
 
         actions$ = of(action);
 
-        TestBed.runInInjectionContext(persistCollections).subscribe(() => {
+        const effects = TestBed.inject(CollectionsEffects);
+        effects.persistCollections$.subscribe(() => {
           expect(storageMock.saveCollections).toHaveBeenCalledWith([collectionA]);
           done();
         });
@@ -112,6 +126,7 @@ describe('Collections Effects', () => {
 
       TestBed.configureTestingModule({
         providers: [
+          CollectionsEffects,
           provideMockActions(() => of(CollectionsActions.setSelectedCollection({ id: 'col-a' }))),
           provideMockStore({
             selectors: [{ selector: selectCollections, value: [collectionA] }],
@@ -120,9 +135,10 @@ describe('Collections Effects', () => {
         ],
       });
 
+      const effects = TestBed.inject(CollectionsEffects);
       // Subscribe but the effect should not emit (non-matching action)
       let callCount = 0;
-      TestBed.runInInjectionContext(persistCollections).subscribe(() => {
+      effects.persistCollections$.subscribe(() => {
         callCount++;
       });
 

@@ -4,8 +4,8 @@
   "scripts": {
     "ng": "ng",
     "start": "node scripts/set-env.js",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
+    "build": "node scripts/set-env.js build",
+    "watch": "node scripts/set-env.js build --watch --configuration development",
     "test": "jest",
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watch",

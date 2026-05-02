@@ -17,9 +17,4 @@ export {
   selectHasActiveFilters,
 } from './movies.reducer';
 
-export {
-  loadPopularMovies,
-  searchMovies,
-  loadMoreMovies,
-  applyFiltersEffect,
-} from './movies.effects';
+export { MoviesEffects } from './movies.effects';

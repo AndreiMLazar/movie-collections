@@ -1,7 +1,10 @@
 // @ts-check
-// Reads .env and launches ng serve with build-time --define flags.
+// Reads .env and launches any `ng` sub-command with build-time --define flags.
 // No secret files are ever written to disk.
-// Run via: npm start
+// Usage:
+//   node scripts/set-env.js serve   (npm start)
+//   node scripts/set-env.js build   (npm run build)
+//   node scripts/set-env.js build --watch --configuration development
 
 const fs    = require('fs');
 const path  = require('path');
@@ -30,14 +33,19 @@ if (!tmdbApiKey) {
   console.warn('[set-env] WARNING: NG_APP_TMDB_API_KEY is not set in .env');
 }
 
+// All arguments after the script name are forwarded to `ng`.
+// e.g. `node scripts/set-env.js build` -> `ng build --define TMDB_API_KEY='...'`
+const forwardArgs = process.argv.slice(2);
+if (forwardArgs.length === 0) forwardArgs.push('serve'); // default
+
 // Pass the key as an esbuild --define flag. The identifier TMDB_API_KEY is
 // replaced inline at build time — no intermediate file with secrets is created.
 const args = [
-  'ng', 'serve',
+  'ng', ...forwardArgs,
   '--define', `TMDB_API_KEY='${tmdbApiKey}'`,
 ];
 
-console.log('[set-env] Launching ng serve with build-time define (no secrets written to disk)');
+console.log(`[set-env] Launching ng ${forwardArgs[0]} with build-time define (no secrets written to disk)`);
 
 const proc = spawn('npx', args, {
   stdio: 'inherit',
@@ -46,7 +54,7 @@ const proc = spawn('npx', args, {
 });
 
 proc.on('error', (err) => {
-  console.error('[set-env] Failed to start ng serve:', err);
+  console.error('[set-env] Failed to start ng:', err);
   process.exit(1);
 });
 

@@ -7,8 +7,8 @@ import { provideEffects } from '@ngrx/effects';
 import { routes } from './app.routes';
 import { moviesFeature } from './features/movies/state/movies.reducer';
 import { collectionsFeature } from './features/collections/state/collections.reducer';
-import * as moviesEffects from './features/movies/state/movies.effects';
-import * as collectionsEffects from './features/collections/state/collections.effects';
+import { MoviesEffects } from './features/movies/state/movies.effects';
+import { CollectionsEffects } from './features/collections/state/collections.effects';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -19,6 +19,6 @@ export const appConfig: ApplicationConfig = {
       [moviesFeature.name]: moviesFeature.reducer,
       [collectionsFeature.name]: collectionsFeature.reducer,
     }),
-    provideEffects(moviesEffects, collectionsEffects),
+    provideEffects(MoviesEffects, CollectionsEffects),
   ],
 };

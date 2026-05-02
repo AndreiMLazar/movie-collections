@@ -9,34 +9,7 @@ import type { TmdbPageResult } from '../types';
 import type { PageResult } from '@shared/types';
 import { TMDB_IMAGE_SIZES } from '@core/constants';
 import type { TmdbImageSize } from '@core/constants';
-
-interface TmdbMovieDetailsRaw {
-  id: number;
-  title: string;
-  poster_path: string | null;
-  backdrop_path: string | null;
-  vote_average: number;
-  vote_count: number;
-  genres: { id: number; name: string }[];
-  overview: string;
-  release_date: string;
-  popularity: number;
-  runtime: number | null;
-  tagline: string;
-  homepage: string;
-  budget: number;
-  revenue: number;
-  credits: {
-    cast: {
-      id: number;
-      name: string;
-      character: string;
-      profile_path: string | null;
-      order: number;
-    }[];
-    crew: { id: number; name: string; job: string; department: string }[];
-  };
-}
+import type { TmdbMovieDetailsRaw } from '../types';
 
 @Injectable({ providedIn: 'root' })
 export class TmdbService {

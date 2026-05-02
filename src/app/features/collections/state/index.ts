@@ -12,4 +12,4 @@ export {
   selectCollectionsContainingMovie,
 } from './collections.reducer';
 
-export { loadCollectionsFromStorage, persistCollections } from './collections.effects';
+export { CollectionsEffects } from './collections.effects';
