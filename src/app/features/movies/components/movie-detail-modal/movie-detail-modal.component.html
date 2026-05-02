@@ -1,0 +1,141 @@
+<div
+  class="detail-modal-backdrop"
+  (click)="onBackdropClick($event)"
+  role="dialog"
+  aria-modal="true"
+  [attr.aria-label]="'Details for ' + movie().title"
+>
+  <div class="detail-modal">
+    <!-- Backdrop hero -->
+    @if (backdropUrl()) {
+      <div
+        class="detail-modal__backdrop-hero"
+        [style.background-image]="'url(' + backdropUrl() + ')'"
+      >
+        <div class="detail-modal__backdrop-gradient"></div>
+      </div>
+    }
+
+    <!-- Close button -->
+    <button class="detail-modal__close" (click)="closed.emit()" aria-label="Close details">
+      ✕
+    </button>
+
+    <!-- Content area -->
+    <div class="detail-modal__content">
+      <!-- Left: poster -->
+      <div class="detail-modal__poster-col">
+        <img class="detail-modal__poster" [src]="posterUrl()" [alt]="movie().title + ' poster'" />
+
+        <!-- Rating -->
+        <div class="detail-modal__rating" [class]="'detail-modal__rating--' + ratingColor()">
+          <span class="detail-modal__rating-star">⭐</span>
+          <span class="detail-modal__rating-value">{{
+            movie().voteAverage | number: '1.1-1'
+          }}</span>
+          <span class="detail-modal__rating-count"
+            >/ 10 &middot; {{ movie().voteCount | number }} votes</span
+          >
+        </div>
+
+        <!-- Add to collection -->
+        <button class="detail-modal__add-btn" (click)="addToCollectionClick.emit(movie())">
+          + Add to Collection
+        </button>
+      </div>
+
+      <!-- Right: info -->
+      <div class="detail-modal__info-col">
+        <h2 class="detail-modal__title">{{ movie().title }}</h2>
+
+        @if (details()?.tagline) {
+          <p class="detail-modal__tagline">"{{ details()!.tagline }}"</p>
+        }
+
+        <!-- Meta row -->
+        <div class="detail-modal__meta">
+          <span class="detail-modal__meta-item">{{ movie().releaseDate | slice: 0 : 4 }}</span>
+
+          @if (details()?.runtime) {
+            <span class="detail-modal__meta-sep">·</span>
+            <span class="detail-modal__meta-item">{{ formatRuntime(details()!.runtime) }}</span>
+          }
+
+          @if (director()) {
+            <span class="detail-modal__meta-sep">·</span>
+            <span class="detail-modal__meta-item">Dir. {{ director() }}</span>
+          }
+        </div>
+
+        <!-- Genres -->
+        @if (details()?.genres?.length) {
+          <div class="detail-modal__genres">
+            @for (genre of details()!.genres; track genre.id) {
+              <span class="detail-modal__genre-chip">{{ genre.name }}</span>
+            }
+          </div>
+        }
+
+        <!-- Overview -->
+        <p class="detail-modal__overview">{{ movie().overview }}</p>
+
+        <!-- Stats -->
+        @if (details()) {
+          <div class="detail-modal__stats">
+            @if (details()!.budget > 0) {
+              <div class="detail-modal__stat">
+                <span class="detail-modal__stat-label">Budget</span>
+                <span class="detail-modal__stat-value">{{
+                  details()!.budget | currency: 'USD' : 'symbol' : '1.0-0'
+                }}</span>
+              </div>
+            }
+            @if (details()!.revenue > 0) {
+              <div class="detail-modal__stat">
+                <span class="detail-modal__stat-label">Revenue</span>
+                <span class="detail-modal__stat-value">{{
+                  details()!.revenue | currency: 'USD' : 'symbol' : '1.0-0'
+                }}</span>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- Cast -->
+        @if (topCast().length > 0) {
+          <div class="detail-modal__cast-section">
+            <h3 class="detail-modal__section-heading">Cast</h3>
+            <div class="detail-modal__cast-list">
+              @for (member of topCast(); track member.id) {
+                <div class="detail-modal__cast-card">
+                  @if (member.profilePath) {
+                    <img
+                      class="detail-modal__cast-photo"
+                      [src]="'https://image.tmdb.org/t/p/w92' + member.profilePath"
+                      [alt]="member.name"
+                    />
+                  } @else {
+                    <div class="detail-modal__cast-photo detail-modal__cast-photo--placeholder">
+                      👤
+                    </div>
+                  }
+                  <div class="detail-modal__cast-info">
+                    <span class="detail-modal__cast-name">{{ member.name }}</span>
+                    <span class="detail-modal__cast-char">{{ member.character }}</span>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Loading state -->
+        @if (!details()) {
+          <div class="detail-modal__loading">
+            <app-spinner />
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

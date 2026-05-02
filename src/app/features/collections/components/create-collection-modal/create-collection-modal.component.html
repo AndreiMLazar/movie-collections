@@ -1,0 +1,38 @@
+<div
+  class="modal-backdrop"
+  animate.enter="modal-enter"
+  animate.leave="modal-leave"
+  (click)="closed.emit()"
+  role="presentation"
+>
+  <div
+    class="create-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="create-modal-title"
+    (click)="$event.stopPropagation()"
+  >
+    <h2 id="create-modal-title" class="create-modal__title">New Collection</h2>
+
+    <label class="create-modal__label" for="col-name-input">Collection Name</label>
+    <input
+      id="col-name-input"
+      class="create-modal__input"
+      type="text"
+      placeholder="e.g. Sci-fi Classics"
+      [(ngModel)]="name"
+      (keydown.enter)="create()"
+      maxlength="60"
+      autofocus
+    />
+
+    <div class="create-modal__actions">
+      <button class="create-modal__cancel" (click)="closed.emit()">Cancel</button>
+      <button class="create-modal__submit" (click)="create()" [disabled]="!name.trim()">
+        Create
+      </button>
+    </div>
+
+    <button class="create-modal__close" (click)="closed.emit()" aria-label="Close">✕</button>
+  </div>
+</div>

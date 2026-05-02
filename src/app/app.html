@@ -1,0 +1,22 @@
+<div class="bg-mesh" aria-hidden="true">
+  <div class="bg-mesh__blob bg-mesh__blob--1"></div>
+  <div class="bg-mesh__blob bg-mesh__blob--2"></div>
+  <div class="bg-mesh__blob bg-mesh__blob--3"></div>
+</div>
+
+<div class="app-shell">
+  <header class="app-nav">
+    <span class="app-nav__brand">🎬 MovieCollections</span>
+    <nav class="app-nav__links" aria-label="Main navigation">
+      <a class="app-nav__link" routerLink="/movies" routerLinkActive="app-nav__link--active"
+        >Movies</a
+      >
+      <a class="app-nav__link" routerLink="/collections" routerLinkActive="app-nav__link--active"
+        >Collections</a
+      >
+    </nav>
+  </header>
+  <main class="app-main">
+    <router-outlet />
+  </main>
+</div>

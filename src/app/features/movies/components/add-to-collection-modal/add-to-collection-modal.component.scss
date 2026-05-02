@@ -1,0 +1,201 @@
+@use '../../../../../styles/variables' as v;
+@use '../../../../../styles/mixins' as m;
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: v.$z-modal;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: v.$space-lg;
+}
+
+.add-modal {
+  @include m.glass-strong();
+  border-radius: v.$radius-xl;
+  border: 1px solid rgba(v.$color-purple-light, 0.2);
+  width: 100%;
+  max-width: 480px;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: v.$space-xl;
+  position: relative;
+
+  @include m.custom-scrollbar();
+
+  &__title {
+    font-size: v.$font-size-xl;
+    font-weight: 700;
+    color: v.$color-text;
+    margin: 0 0 v.$space-lg;
+    padding-right: v.$space-xl;
+  }
+
+  &__empty {
+    color: v.$color-text-muted;
+    font-size: v.$font-size-sm;
+    margin-bottom: v.$space-md;
+  }
+
+  &__list {
+    list-style: none;
+    margin: 0 0 v.$space-md;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: v.$space-xs;
+  }
+
+  &__item-btn {
+    @include m.button-reset();
+    width: 100%;
+    padding: v.$space-sm v.$space-md;
+    border-radius: v.$radius-sm;
+    border: 1px solid rgba(v.$color-purple-light, 0.15);
+    background: rgba(v.$color-purple-light, 0.05);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: v.$space-sm;
+    transition:
+      background v.$transition-base,
+      border-color v.$transition-base;
+
+    &:not(:disabled):hover {
+      background: rgba(v.$color-purple-light, 0.12);
+      border-color: rgba(v.$color-purple-light, 0.3);
+    }
+
+    &--added,
+    &:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+  }
+
+  &__item-name {
+    flex: 1;
+    text-align: left;
+    color: v.$color-text;
+    font-size: v.$font-size-sm;
+    font-weight: 500;
+  }
+
+  &__item-count {
+    color: v.$color-text-subtle;
+    font-size: v.$font-size-xs;
+  }
+
+  &__check {
+    color: v.$color-success;
+    font-weight: 700;
+  }
+
+  &__create {
+    display: flex;
+    gap: v.$space-sm;
+    margin-top: v.$space-md;
+  }
+
+  &__input {
+    flex: 1;
+    padding: v.$space-sm v.$space-md;
+    border-radius: v.$radius-sm;
+    border: 1px solid rgba(v.$color-purple-light, 0.2);
+    background: rgba(v.$color-bg, 0.5);
+    color: v.$color-text;
+    font-size: v.$font-size-sm;
+    outline: none;
+
+    &::placeholder {
+      color: v.$color-text-subtle;
+    }
+
+    &:focus {
+      border-color: rgba(v.$color-purple-light, 0.5);
+    }
+  }
+
+  &__create-btn {
+    @include m.button-reset();
+    padding: v.$space-sm v.$space-md;
+    border-radius: v.$radius-sm;
+    background: v.$color-accent;
+    color: #fff;
+    font-size: v.$font-size-sm;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity v.$transition-base;
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
+
+    &:not(:disabled):hover {
+      opacity: 0.88;
+    }
+
+    @include m.focus-ring();
+  }
+
+  &__close {
+    @include m.button-reset();
+    position: absolute;
+    top: v.$space-md;
+    right: v.$space-md;
+    width: 32px;
+    height: 32px;
+    border-radius: v.$radius-sm;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: v.$color-text-muted;
+    cursor: pointer;
+    font-size: v.$font-size-base;
+    transition:
+      background v.$transition-base,
+      color v.$transition-base;
+
+    &:hover {
+      background: rgba(v.$color-text-muted, 0.1);
+      color: v.$color-text;
+    }
+
+    @include m.focus-ring();
+  }
+}
+
+@keyframes modal-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes modal-leave {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95) translateY(-8px);
+  }
+}
+
+.modal-enter {
+  animation: modal-enter 0.2s ease-out;
+}
+
+.modal-leave {
+  animation: modal-leave 0.15s ease-in forwards;
+}

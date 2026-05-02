@@ -1,0 +1,107 @@
+@use '../../../../../styles/variables' as v;
+@use '../../../../../styles/mixins' as m;
+
+.movie-filters {
+  display: flex;
+  flex-direction: column;
+  gap: v.$space-lg;
+  padding: v.$space-lg;
+  background: v.$color-surface;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-md;
+  margin-bottom: v.$space-lg;
+
+  &__sort {
+    display: flex;
+    align-items: center;
+    gap: v.$space-md;
+  }
+
+  &__sort-label {
+    font-size: v.$font-size-sm;
+    font-weight: 600;
+    color: v.$color-text-muted;
+    white-space: nowrap;
+  }
+
+  &__sort-select {
+    flex: 1;
+    max-width: 220px;
+    padding: v.$space-xs v.$space-sm;
+    background: v.$color-surface-2;
+    border: 1px solid v.$color-border;
+    border-radius: v.$radius-sm;
+    color: v.$color-text;
+    font-size: v.$font-size-sm;
+    cursor: pointer;
+    outline: none;
+    transition: border-color v.$transition-base;
+
+    &:focus {
+      border-color: v.$color-border-strong;
+    }
+  }
+
+  &__genres-label {
+    display: block;
+    font-size: v.$font-size-sm;
+    font-weight: 600;
+    color: v.$color-text-muted;
+    margin-bottom: v.$space-sm;
+  }
+
+  &__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: v.$space-xs;
+  }
+
+  &__chip {
+    @include m.button-reset();
+    padding: v.$space-2xs v.$space-sm;
+    border-radius: v.$radius-pill;
+    border: 1px solid v.$color-border;
+    color: v.$color-text-muted;
+    font-size: v.$font-size-sm;
+    cursor: pointer;
+    transition:
+      background v.$transition-base,
+      border-color v.$transition-base,
+      color v.$transition-base;
+
+    &:hover {
+      border-color: v.$color-border-strong;
+      color: v.$color-text;
+    }
+
+    @include m.focus-ring();
+
+    &--active {
+      background: rgba(v.$color-purple-light, 0.2);
+      border-color: v.$color-purple-light;
+      color: v.$color-text;
+    }
+  }
+
+  &__clear {
+    @include m.button-reset();
+    align-self: flex-start;
+    padding: v.$space-xs v.$space-md;
+    border-radius: v.$radius-sm;
+    border: 1px solid rgba(v.$color-accent, 0.4);
+    color: v.$color-accent;
+    font-size: v.$font-size-sm;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      background v.$transition-base,
+      border-color v.$transition-base;
+
+    &:hover {
+      background: rgba(v.$color-accent, 0.1);
+      border-color: v.$color-accent;
+    }
+
+    @include m.focus-ring();
+  }
+}

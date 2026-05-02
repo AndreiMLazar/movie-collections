@@ -1,0 +1,26 @@
+<section class="collections-page">
+  <header class="collections-page__header">
+    <h1 class="collections-page__heading">My Collections</h1>
+    <button class="collections-page__create-btn" (click)="showCreateModal.set(true)">
+      + New Collection
+    </button>
+  </header>
+
+  @if (collections().length === 0) {
+    <app-empty-state
+      icon="📁"
+      heading="No collections yet"
+      description="Start by creating your first movie collection"
+    />
+  } @else {
+    <ul class="collections-grid" role="list">
+      @for (col of collections(); track col.id) {
+        <li><app-collection-card [collection]="col" /></li>
+      }
+    </ul>
+  }
+
+  @if (showCreateModal()) {
+    <app-create-collection-modal (closed)="showCreateModal.set(false)" />
+  }
+</section>

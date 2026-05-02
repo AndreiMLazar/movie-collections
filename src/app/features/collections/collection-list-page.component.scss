@@ -1,0 +1,42 @@
+@use '../../../styles/variables' as v;
+@use '../../../styles/mixins' as m;
+
+.collections-page {
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: v.$space-2xl;
+    flex-wrap: wrap;
+    gap: v.$space-md;
+  }
+
+  &__heading {
+    font-size: v.$font-size-2xl;
+    font-weight: 700;
+    color: v.$color-text;
+    margin: 0;
+  }
+
+  &__create-btn {
+    @include m.btn-primary();
+  }
+}
+
+.collections-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: v.$space-lg;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  // li children should fill the grid cell
+  > li {
+    display: contents;
+  }
+
+  @include m.respond-to('sm') {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,259 @@
+@use 'sass:map';
+@use 'variables' as v;
+
+// ─── Breakpoints ──────────────────────────────────────────────────────────────
+$breakpoints: (
+  'sm': 480px,
+  'md': 768px,
+  'lg': 1024px,
+  'xl': 1280px,
+  '2xl': 1536px,
+);
+
+@mixin respond-to($bp) {
+  $value: map.get($breakpoints, $bp);
+  @if $value {
+    @media (min-width: #{$value}) {
+      @content;
+    }
+  } @else {
+    @warn 'Unknown breakpoint: #{$bp}';
+  }
+}
+
+// ─── Glassmorphism ────────────────────────────────────────────────────────────
+@mixin glass($bg: v.$color-glass-bg) {
+  background: $bg;
+  backdrop-filter: v.$glass-blur;
+  -webkit-backdrop-filter: v.$glass-blur;
+  border: v.$glass-border;
+}
+
+@mixin glass-strong($bg: v.$color-glass-bg-2) {
+  background: $bg;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: v.$glass-border-strong;
+}
+
+// ─── Typography helpers ───────────────────────────────────────────────────────
+@mixin truncate($lines: 1) {
+  @if $lines == 1 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  } @else {
+    display: -webkit-box;
+    -webkit-line-clamp: $lines;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+@mixin heading($size: v.$font-size-2xl) {
+  font-size: $size;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: v.$color-text;
+}
+
+// ─── Accent gradient ──────────────────────────────────────────────────────────
+@mixin accent-gradient {
+  background: linear-gradient(135deg, v.$color-purple 0%, v.$color-accent 100%);
+}
+
+@mixin accent-text-gradient {
+  @include accent-gradient;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+// ─── Glow effects ─────────────────────────────────────────────────────────────
+@mixin glow-accent($intensity: 0.5) {
+  box-shadow:
+    0 0 20px rgba(224, 25, 90, $intensity),
+    0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+@mixin glow-purple($intensity: 0.5) {
+  box-shadow:
+    0 0 20px rgba(108, 63, 197, $intensity),
+    0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+// ─── Focus ring ───────────────────────────────────────────────────────────────
+@mixin focus-ring {
+  &:focus-visible {
+    box-shadow: 0 0 0 2px v.$color-purple-light;
+    outline: none;
+  }
+}
+
+// ─── Button reset ─────────────────────────────────────────────────────────────
+@mixin button-reset {
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  line-height: inherit;
+}
+
+// ─── Scrollbar ────────────────────────────────────────────────────────────────
+@mixin custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: v.$color-surface-3 transparent;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: v.$color-surface-3;
+    border-radius: v.$radius-pill;
+  }
+}
+
+// ─── Poster aspect ratio ──────────────────────────────────────────────────────
+@mixin poster-ratio {
+  aspect-ratio: 2 / 3;
+  width: 100%;
+  object-fit: cover;
+}
+
+// ─── Card hover lift ──────────────────────────────────────────────────────────
+@mixin hover-lift($y: -6px) {
+  transition:
+    transform v.$transition-base,
+    box-shadow v.$transition-base;
+
+  &:hover {
+    transform: translateY($y);
+    @include glow-purple;
+  }
+}
+
+// ─── Buttons ─────────────────────────────────────────────────────────────────
+@mixin btn-primary {
+  @include button-reset();
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: v.$space-xs;
+  padding: v.$space-sm v.$space-xl;
+  border-radius: v.$radius-pill;
+  background: linear-gradient(135deg, v.$color-purple 0%, v.$color-accent 100%);
+  color: #fff;
+  font-size: v.$font-size-sm;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition:
+    opacity v.$transition-base,
+    transform v.$transition-base,
+    box-shadow v.$transition-base;
+  box-shadow: 0 4px 20px rgba(v.$color-accent, 0.35);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity v.$transition-base;
+  }
+
+  &:not(:disabled):hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 28px rgba(v.$color-accent, 0.5);
+
+    &::before {
+      opacity: 1;
+    }
+  }
+
+  &:not(:disabled):active {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  @include focus-ring();
+}
+
+@mixin btn-outline {
+  @include button-reset();
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: v.$space-xs;
+  padding: v.$space-sm v.$space-xl;
+  border-radius: v.$radius-pill;
+  border: 1px solid rgba(v.$color-purple-light, 0.4);
+  background: rgba(v.$color-purple-light, 0.04);
+  color: v.$color-purple-light;
+  font-size: v.$font-size-sm;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background v.$transition-base,
+    border-color v.$transition-base,
+    color v.$transition-base,
+    box-shadow v.$transition-base;
+
+  &:not(:disabled):hover {
+    background: rgba(v.$color-purple-light, 0.12);
+    border-color: rgba(v.$color-purple-light, 0.7);
+    box-shadow: 0 0 16px rgba(v.$color-purple-light, 0.2);
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  @include focus-ring();
+}
+
+@mixin btn-ghost {
+  @include button-reset();
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: v.$space-xs;
+  padding: v.$space-xs v.$space-md;
+  border-radius: v.$radius-md;
+  color: v.$color-text-muted;
+  font-size: v.$font-size-sm;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background v.$transition-base,
+    color v.$transition-base;
+
+  &:not(:disabled):hover {
+    background: rgba(v.$color-text-muted, 0.1);
+    color: v.$color-text;
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  @include focus-ring();
+}

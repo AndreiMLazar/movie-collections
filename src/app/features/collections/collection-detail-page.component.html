@@ -1,0 +1,92 @@
+@if (collection(); as col) {
+  <section class="detail-page">
+    <header class="detail-page__header">
+      <a class="detail-page__back" routerLink="/collections">← Back</a>
+      <h1 class="detail-page__title">{{ col.name }}</h1>
+      <div class="detail-page__sort">
+        <label class="detail-page__sort-label">Sort by:</label>
+        <select
+          class="detail-page__sort-select"
+          [value]="col.sortOrder"
+          (change)="setSortOrder($any($event.target).value)"
+        >
+          @for (entry of sortLabels | keyvalue; track entry.key) {
+            <option [value]="entry.key">{{ entry.value }}</option>
+          }
+        </select>
+      </div>
+    </header>
+
+    @if (col.movieIds.length === 0) {
+      <p class="detail-page__empty">
+        No films yet. Browse <a routerLink="/movies">popular movies</a> and add some!
+      </p>
+    } @else {
+      <ul class="detail-page__list">
+        @for (item of movieItems(); track item.id) {
+          <li class="detail-page__item">
+            @if (item.details; as m) {
+              <div class="detail-page__movie-card">
+                @if (m.posterPath) {
+                  <img
+                    class="detail-page__poster"
+                    [src]="getPosterUrl(m.posterPath)"
+                    [alt]="m.title"
+                    loading="lazy"
+                    width="90"
+                    height="135"
+                  />
+                } @else {
+                  <div class="detail-page__poster-placeholder" aria-hidden="true"></div>
+                }
+                <div class="detail-page__movie-info">
+                  <h3 class="detail-page__movie-title">{{ m.title }}</h3>
+                  <div class="detail-page__movie-meta">
+                    <span class="detail-page__movie-year">{{ m.releaseDate.slice(0, 4) }}</span>
+                    <span
+                      class="detail-page__rating-badge"
+                      [class]="'detail-page__rating-badge--' + ratingColor(m.voteAverage)"
+                      >⭐ {{ m.voteAverage.toFixed(1) }}</span
+                    >
+                    @if (m.voteCount) {
+                      <span class="detail-page__vote-count">{{ m.voteCount | number }} votes</span>
+                    }
+                  </div>
+                  @if (m.genreIds.length > 0) {
+                    <div class="detail-page__genre-chips">
+                      @for (genreId of m.genreIds.slice(0, 3); track genreId) {
+                        @if (genres[genreId]; as genreName) {
+                          <span class="detail-page__genre-chip">{{ genreName }}</span>
+                        }
+                      }
+                    </div>
+                  }
+                  @if (m.overview) {
+                    <p class="detail-page__overview">{{ m.overview }}</p>
+                  }
+                </div>
+              </div>
+            } @else {
+              <div class="detail-page__movie-card detail-page__movie-card--loading">
+                <div class="detail-page__poster-placeholder" aria-hidden="true"></div>
+                <div class="detail-page__movie-info">
+                  <div class="detail-page__loading-bar detail-page__loading-bar--title"></div>
+                  <div class="detail-page__loading-bar detail-page__loading-bar--meta"></div>
+                </div>
+              </div>
+            }
+            <button
+              class="detail-page__remove"
+              (click)="removeMovie(item.id)"
+              aria-label="Remove {{ item.details?.title ?? 'movie' }} from collection"
+            >
+              Remove
+            </button>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+} @else {
+  <p class="detail-page__not-found">Collection not found.</p>
+}

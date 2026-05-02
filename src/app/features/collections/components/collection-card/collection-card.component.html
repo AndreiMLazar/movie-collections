@@ -1,0 +1,68 @@
+<article class="collection-card">
+  <a class="collection-card__link" [routerLink]="['/collections', collection().id]">
+    <!-- Mini poster preview strip -->
+    <div class="collection-card__preview">
+      @if (previewMovies().length > 0) {
+        @for (movie of previewMovies(); track movie.id) {
+          <img
+            class="collection-card__preview-img"
+            [src]="getPosterUrl(movie.posterPath)"
+            [alt]="movie.title"
+            loading="lazy"
+          />
+        }
+        @if (remainingCount() > 0) {
+          <div class="collection-card__preview-more">+{{ remainingCount() }}</div>
+        }
+      } @else {
+        <div class="collection-card__preview-empty" aria-hidden="true">🎬</div>
+      }
+    </div>
+
+    <!-- Card body -->
+    <div class="collection-card__body">
+      <h3 class="collection-card__name">{{ collection().name }}</h3>
+
+      <div class="collection-card__meta">
+        <span class="collection-card__count">
+          {{ collection().movieIds.length }}
+          {{ collection().movieIds.length === 1 ? 'film' : 'films' }}
+        </span>
+        @if (avgRating() !== null) {
+          <span class="collection-card__rating">⭐ {{ avgRating()!.toFixed(1) }}</span>
+        }
+      </div>
+
+      @if (topGenres().length > 0) {
+        <div class="collection-card__genres">
+          @for (genre of topGenres(); track genre) {
+            <span class="collection-card__genre-chip">{{ genre }}</span>
+          }
+        </div>
+      }
+
+      @if (previewMovies().length > 0) {
+        <ul class="collection-card__titles" aria-hidden="true">
+          @for (movie of previewMovies(); track movie.id) {
+            <li class="collection-card__title-item">
+              <span class="collection-card__title-name">{{ movie.title }}</span>
+              <span class="collection-card__title-year">{{
+                movie.releaseDate | slice: 0 : 4
+              }}</span>
+            </li>
+          }
+        </ul>
+      }
+
+      <span class="collection-card__created">Created {{ createdLabel() }}</span>
+    </div>
+  </a>
+
+  <button
+    class="collection-card__delete"
+    (click)="onDelete()"
+    aria-label="Delete {{ collection().name }}"
+  >
+    🗑
+  </button>
+</article>

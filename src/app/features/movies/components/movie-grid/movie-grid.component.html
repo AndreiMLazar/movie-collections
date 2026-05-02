@@ -1,0 +1,18 @@
+<cdk-virtual-scroll-viewport
+  [itemSize]="itemSize"
+  [minBufferPx]="minBuffer"
+  [maxBufferPx]="maxBuffer"
+  appendOnly
+  class="movie-grid-viewport"
+  (scrolledIndexChange)="onScrolledIndexChange($event)"
+>
+  <div *cdkVirtualFor="let row of movieRows(); trackBy: trackByRow" class="movie-grid-row">
+    @for (movie of row; track movie.id) {
+      <app-movie-card
+        [movie]="movie"
+        (addToCollectionClick)="addToCollection.emit($event)"
+        (movieClick)="movieClick.emit($event)"
+      />
+    }
+  </div>
+</cdk-virtual-scroll-viewport>

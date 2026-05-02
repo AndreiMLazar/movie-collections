@@ -1,0 +1,161 @@
+@use '../../../../../styles/variables' as v;
+@use '../../../../../styles/mixins' as m;
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: v.$z-modal;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: v.$space-lg;
+}
+
+.create-modal {
+  @include m.glass-strong();
+  border-radius: v.$radius-xl;
+  border: 1px solid rgba(v.$color-purple-light, 0.2);
+  width: 100%;
+  max-width: 420px;
+  padding: v.$space-xl;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: v.$space-md;
+
+  &__title {
+    font-size: v.$font-size-xl;
+    font-weight: 700;
+    color: v.$color-text;
+    margin: 0;
+  }
+
+  &__label {
+    font-size: v.$font-size-sm;
+    color: v.$color-text-muted;
+    font-weight: 500;
+    margin-bottom: -(v.$space-xs);
+  }
+
+  &__input {
+    padding: v.$space-sm v.$space-md;
+    border-radius: v.$radius-sm;
+    border: 1px solid rgba(v.$color-purple-light, 0.25);
+    background: rgba(v.$color-bg, 0.5);
+    color: v.$color-text;
+    font-size: v.$font-size-base;
+    outline: none;
+    width: 100%;
+    box-sizing: border-box;
+
+    &::placeholder {
+      color: v.$color-text-subtle;
+    }
+
+    &:focus {
+      border-color: rgba(v.$color-purple-light, 0.5);
+      box-shadow: 0 0 0 2px rgba(v.$color-purple-light, 0.1);
+    }
+  }
+
+  &__actions {
+    display: flex;
+    gap: v.$space-sm;
+    justify-content: flex-end;
+    margin-top: v.$space-xs;
+  }
+
+  &__cancel {
+    @include m.button-reset();
+    padding: v.$space-sm v.$space-lg;
+    border-radius: v.$radius-sm;
+    border: 1px solid rgba(v.$color-text-muted, 0.2);
+    color: v.$color-text-muted;
+    font-size: v.$font-size-sm;
+    cursor: pointer;
+    transition: background v.$transition-base;
+
+    &:hover {
+      background: rgba(v.$color-text-muted, 0.08);
+    }
+    @include m.focus-ring();
+  }
+
+  &__submit {
+    @include m.button-reset();
+    padding: v.$space-sm v.$space-xl;
+    border-radius: v.$radius-sm;
+    background: v.$color-accent;
+    color: #fff;
+    font-size: v.$font-size-sm;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity v.$transition-base;
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
+    &:not(:disabled):hover {
+      opacity: 0.88;
+    }
+    @include m.focus-ring();
+  }
+
+  &__close {
+    @include m.button-reset();
+    position: absolute;
+    top: v.$space-md;
+    right: v.$space-md;
+    width: 32px;
+    height: 32px;
+    border-radius: v.$radius-sm;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: v.$color-text-muted;
+    cursor: pointer;
+    font-size: v.$font-size-base;
+    transition:
+      background v.$transition-base,
+      color v.$transition-base;
+
+    &:hover {
+      background: rgba(v.$color-text-muted, 0.1);
+      color: v.$color-text;
+    }
+    @include m.focus-ring();
+  }
+}
+
+@keyframes modal-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes modal-leave {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95) translateY(-8px);
+  }
+}
+
+.modal-enter {
+  animation: modal-enter 0.2s ease-out;
+}
+
+.modal-leave {
+  animation: modal-leave 0.15s ease-in forwards;
+}

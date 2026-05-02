@@ -1,0 +1,152 @@
+@use '../styles/variables' as v;
+@use '../styles/mixins' as m;
+
+// ── Animated mesh gradient blobs ─────────────────────────────────────────────
+.bg-mesh {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+
+  &__blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    will-change: transform;
+  }
+
+  &__blob--1 {
+    width: 700px;
+    height: 700px;
+    background: radial-gradient(circle, rgba(108, 63, 197, 0.28) 0%, transparent 70%);
+    top: -200px;
+    left: -150px;
+    animation: blob-1 20s ease-in-out infinite alternate;
+  }
+
+  &__blob--2 {
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(224, 25, 90, 0.18) 0%, transparent 70%);
+    bottom: -150px;
+    right: -100px;
+    animation: blob-2 26s ease-in-out infinite alternate;
+  }
+
+  &__blob--3 {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(153, 102, 255, 0.15) 0%, transparent 70%);
+    top: 40%;
+    left: 45%;
+    animation: blob-3 18s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes blob-1 {
+  from {
+    transform: translate(0, 0) scale(1);
+  }
+  to {
+    transform: translate(100px, 140px) scale(1.2);
+  }
+}
+
+@keyframes blob-2 {
+  from {
+    transform: translate(0, 0) scale(1);
+  }
+  to {
+    transform: translate(-120px, -90px) scale(0.85);
+  }
+}
+
+@keyframes blob-3 {
+  from {
+    transform: translate(0, 0) scale(1);
+  }
+  to {
+    transform: translate(-80px, 60px) scale(1.3);
+  }
+}
+
+// ── App shell ────────────────────────────────────────────────────────────────
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+// ── Floating pill nav ────────────────────────────────────────────────────────
+.app-nav {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  width: 100%;
+  max-width: 1280px;
+  transform: translateX(-50%);
+  z-index: v.$z-nav;
+  display: flex;
+  align-items: center;
+  gap: v.$space-md;
+  padding: v.$space-md v.$space-lg;
+  border-radius: v.$radius-pill;
+  @include m.glass-strong();
+  border: 1px solid rgba(v.$color-purple-light, 0.2);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(v.$color-purple-light, 0.08);
+  white-space: nowrap;
+
+  &__brand {
+    font-weight: 700;
+    font-size: v.$font-size-base;
+    letter-spacing: -0.01em;
+    color: v.$color-text;
+    user-select: none;
+    flex-shrink: 0;
+  }
+
+  &__links {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: v.$space-xl;
+    margin-left: v.$space-sm;
+  }
+
+  &__link {
+    color: v.$color-text-muted;
+    font-weight: 500;
+    font-size: v.$font-size-base;
+    text-decoration: none;
+    transition: color v.$transition-base;
+
+    &:hover,
+    &:focus-visible {
+      color: v.$color-text;
+    }
+
+    &--active {
+      color: v.$color-text;
+      font-weight: 600;
+    }
+  }
+}
+
+// ── Main content ─────────────────────────────────────────────────────────────
+.app-main {
+  flex: 1;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  // 20px (pill top) + ~52px (pill height) + 24px (gap below pill)
+  padding: calc(20px + 52px + v.$space-lg) v.$space-xl v.$space-2xl;
+
+  @include m.respond-to('sm') {
+    padding-left: v.$space-md;
+    padding-right: v.$space-md;
+  }
+}

@@ -1,0 +1,79 @@
+<section class="movies-page">
+  <header class="movies-page__header">
+    <h1 class="movies-page__heading">
+      @if (isSearching()) {
+        Search Results
+      } @else {
+        Popular Movies
+      }
+    </h1>
+    <div class="movies-page__controls">
+      <app-movie-search />
+      @if (!isSearching()) {
+        <button
+          type="button"
+          class="movies-page__filter-btn"
+          [class.movies-page__filter-btn--active]="hasActiveFilters()"
+          (click)="toggleFilters()"
+          [attr.aria-expanded]="filtersOpen()"
+        >
+          Filters
+          @if (hasActiveFilters()) {
+            <span class="movies-page__filter-badge" aria-hidden="true"></span>
+          }
+        </button>
+      }
+    </div>
+  </header>
+
+  <div
+    class="movies-page__filters-wrap"
+    [class.movies-page__filters-wrap--open]="!isSearching() && filtersOpen()"
+    [attr.inert]="isSearching() || !filtersOpen() ? '' : null"
+  >
+    <app-movie-filters />
+  </div>
+
+  @if (error()) {
+    <app-error-banner [message]="error()!" />
+  }
+
+  @if (loading() && movies().length === 0) {
+    <app-spinner />
+  } @else if (movies().length === 0 && !loading()) {
+    <app-empty-state
+      heading="No movies found"
+      description="Try a different search term or adjust your filters"
+    />
+  } @else {
+    <app-movie-grid
+      [movies]="movies()"
+      [hasMore]="hasMore()"
+      [loading]="loading()"
+      [resetScrollTrigger]="resetScrollTrigger()"
+      (addToCollection)="openModal($event)"
+      (movieClick)="openDetail($event)"
+      (loadMore)="loadMore()"
+    />
+  }
+
+  @if (selectedMovie(); as movie) {
+    @defer (on immediate) {
+      <app-add-to-collection-modal [movie]="movie" (closed)="closeModal()" />
+    } @placeholder {
+      <div aria-hidden="true"></div>
+    }
+  }
+
+  @if (selectedDetailMovie(); as detailMovie) {
+    @defer (on immediate) {
+      <app-movie-detail-modal
+        [movie]="detailMovie"
+        (closed)="closeDetail()"
+        (addToCollectionClick)="closeDetail(); openModal(detailMovie)"
+      />
+    } @placeholder {
+      <div aria-hidden="true"></div>
+    }
+  }
+</section>

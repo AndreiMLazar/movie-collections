@@ -1,0 +1,56 @@
+<div
+  class="modal-backdrop"
+  animate.enter="modal-enter"
+  animate.leave="modal-leave"
+  (click)="closed.emit()"
+  role="presentation"
+>
+  <div
+    class="add-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="add-modal-title"
+    (click)="$event.stopPropagation()"
+  >
+    <h2 id="add-modal-title" class="add-modal__title">Add "{{ movie().title }}" to a Collection</h2>
+
+    @if (collections().length === 0) {
+      <p class="add-modal__empty">You have no collections yet. Create one below.</p>
+    } @else {
+      <ul class="add-modal__list">
+        @for (col of collections(); track col.id) {
+          <li class="add-modal__item">
+            <button
+              class="add-modal__item-btn"
+              [class.add-modal__item-btn--added]="col.movieIds.includes(movie().id)"
+              [disabled]="col.movieIds.includes(movie().id)"
+              (click)="addTo(col.id)"
+            >
+              <span class="add-modal__item-name">{{ col.name }}</span>
+              <span class="add-modal__item-count">{{ col.movieIds.length }} films</span>
+              @if (col.movieIds.includes(movie().id)) {
+                <span class="add-modal__check" aria-label="Already added">✓</span>
+              }
+            </button>
+          </li>
+        }
+      </ul>
+    }
+
+    <div class="add-modal__create">
+      <input
+        class="add-modal__input"
+        type="text"
+        placeholder="New collection name…"
+        [(ngModel)]="newName"
+        (keydown.enter)="createAndAdd()"
+        maxlength="60"
+      />
+      <button class="add-modal__create-btn" (click)="createAndAdd()" [disabled]="!newName.trim()">
+        Create & Add
+      </button>
+    </div>
+
+    <button class="add-modal__close" (click)="closed.emit()" aria-label="Close dialog">✕</button>
+  </div>
+</div>

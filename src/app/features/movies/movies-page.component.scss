@@ -1,0 +1,124 @@
+@use '../../../styles/variables' as v;
+@use '../../../styles/mixins' as m;
+
+.movies-page {
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: v.$space-md;
+    margin-bottom: v.$space-2xl;
+
+    @include m.respond-to('sm') {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+
+  &__heading {
+    font-size: v.$font-size-2xl;
+    font-weight: 700;
+    color: v.$color-text;
+    margin: 0;
+  }
+
+  &__controls {
+    display: flex;
+    align-items: center;
+    gap: v.$space-md;
+  }
+
+  &__filter-btn {
+    @include m.button-reset();
+    position: relative;
+    padding: v.$space-xs v.$space-md;
+    border-radius: v.$radius-md;
+    border: 1px solid rgba(v.$color-purple-light, 0.3);
+    color: v.$color-text-muted;
+    font-size: v.$font-size-sm;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      background v.$transition-base,
+      border-color v.$transition-base,
+      color v.$transition-base;
+
+    &:hover {
+      background: rgba(v.$color-purple-light, 0.1);
+      border-color: rgba(v.$color-purple-light, 0.5);
+      color: v.$color-text;
+    }
+
+    @include m.focus-ring();
+
+    &--active {
+      border-color: v.$color-purple-light;
+      color: v.$color-text;
+    }
+  }
+
+  &__filter-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: v.$color-accent;
+  }
+
+  &__filters-wrap {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      grid-template-rows 240ms ease,
+      opacity 180ms ease;
+
+    > app-movie-filters {
+      overflow: hidden;
+    }
+
+    &--open {
+      grid-template-rows: 1fr;
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
+
+  &__load-more {
+    display: flex;
+    justify-content: center;
+    margin-top: v.$space-2xl;
+  }
+
+  &__load-btn {
+    @include m.button-reset();
+    padding: v.$space-sm v.$space-2xl;
+    border-radius: v.$radius-md;
+    border: 1px solid rgba(v.$color-purple-light, 0.3);
+    color: v.$color-text-muted;
+    font-size: v.$font-size-base;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      background v.$transition-base,
+      border-color v.$transition-base,
+      color v.$transition-base;
+
+    &:not(:disabled):hover {
+      background: rgba(v.$color-purple-light, 0.1);
+      border-color: rgba(v.$color-purple-light, 0.5);
+      color: v.$color-text;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+
+    @include m.focus-ring();
+  }
+}

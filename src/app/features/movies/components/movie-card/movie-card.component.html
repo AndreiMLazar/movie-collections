@@ -1,0 +1,44 @@
+<article class="movie-card" [attr.aria-label]="movie().title">
+  <!-- Poster -->
+  <button
+    type="button"
+    class="movie-card__poster-wrap"
+    (click)="movieClick.emit(movie())"
+    [attr.aria-label]="'View details for ' + movie().title"
+  >
+    <img
+      class="movie-card__poster"
+      [src]="posterUrl"
+      [alt]="movie().title + ' poster'"
+      loading="lazy"
+    />
+
+    <!-- Rating badge -->
+    <div class="movie-card__rating" [class]="'movie-card__rating--' + ratingColor">
+      ⭐ {{ movie().voteAverage | number: '1.1-1' }}
+    </div>
+
+    <!-- Hover overlay -->
+    <div class="movie-card__overlay">
+      <div class="movie-card__genre-row">
+        @for (id of movie().genreIds.slice(0, 2); track id) {
+          <span class="movie-card__genre">{{ genres[id] }}</span>
+        }
+      </div>
+      <p class="movie-card__overview">{{ movie().overview }}</p>
+      <button
+        class="movie-card__add-btn"
+        (click)="$event.stopPropagation(); addToCollectionClick.emit(movie())"
+        aria-label="Add {{ movie().title }} to collection"
+      >
+        + Add to Collection
+      </button>
+    </div>
+
+    <!-- Bottom gradient info -->
+    <div class="movie-card__info">
+      <h3 class="movie-card__title">{{ movie().title }}</h3>
+      <span class="movie-card__year">{{ movie().releaseDate | slice: 0 : 4 }}</span>
+    </div>
+  </button>
+</article>

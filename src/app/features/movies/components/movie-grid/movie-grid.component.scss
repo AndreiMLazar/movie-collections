@@ -1,0 +1,29 @@
+@use '../../../../../styles/variables' as v;
+
+.movie-grid-viewport {
+  height: calc(100vh - 280px);
+  min-height: 400px;
+  width: 100%;
+  padding-bottom: v.$space-lg;
+  padding-right: v.$space-md;
+}
+
+.movie-grid-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: v.$space-lg;
+  height: 360px;
+  margin-bottom: v.$space-lg;
+
+  @media (max-width: 1199px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  @media (max-width: 899px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (max-width: 599px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

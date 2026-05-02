@@ -1,0 +1,60 @@
+@use '../../../../../styles/variables' as v;
+@use '../../../../../styles/mixins' as m;
+
+.movie-search {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+
+  &__input {
+    @include m.glass();
+    width: 100%;
+    padding: v.$space-sm v.$space-xl v.$space-sm v.$space-md;
+    border-radius: v.$radius-md;
+    border: 1px solid rgba(v.$color-purple-light, 0.2);
+    background: transparent;
+    color: v.$color-text;
+    font-size: v.$font-size-base;
+    outline: none;
+    transition: border-color v.$transition-base;
+    box-sizing: border-box;
+
+    &::placeholder {
+      color: v.$color-text-subtle;
+    }
+
+    &:focus {
+      border-color: rgba(v.$color-purple-light, 0.5);
+      box-shadow: 0 0 0 2px rgba(v.$color-purple-light, 0.1);
+    }
+
+    // Hide native clear button
+    &::-webkit-search-cancel-button {
+      display: none;
+    }
+  }
+
+  &__clear {
+    @include m.button-reset();
+    position: absolute;
+    right: v.$space-sm;
+    top: 50%;
+    transform: translateY(-50%);
+    color: v.$color-text-subtle;
+    font-size: v.$font-size-sm;
+    cursor: pointer;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: v.$radius-sm;
+    transition: color v.$transition-base;
+
+    &:hover {
+      color: v.$color-text;
+    }
+
+    @include m.focus-ring();
+  }
+}

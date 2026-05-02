@@ -1,0 +1,16 @@
+<div class="movie-search">
+  <label class="sr-only" for="movie-search-input">Search movies</label>
+  <input
+    id="movie-search-input"
+    class="movie-search__input"
+    type="search"
+    placeholder="Search movies…"
+    [ngModel]="query()"
+    (ngModelChange)="onQueryChange($event)"
+    autocomplete="off"
+    aria-label="Search movies"
+  />
+  @if (query()) {
+    <button class="movie-search__clear" (click)="clear()" aria-label="Clear search">✕</button>
+  }
+</div>

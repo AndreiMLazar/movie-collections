@@ -1,0 +1,202 @@
+@use '../../../../../styles/variables' as v;
+@use '../../../../../styles/mixins' as m;
+
+.movie-card {
+  position: relative;
+  border-radius: v.$radius-lg;
+  overflow: hidden;
+  cursor: pointer;
+  height: 360px;
+
+  // 3D tilt — set via TS HostListener
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition:
+    transform 0.15s ease-out,
+    box-shadow v.$transition-base;
+
+  // Shine overlay (moves with cursor via CSS vars set in TS)
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(
+      ellipse at var(--shine-x, 50%) var(--shine-y, 50%),
+      rgba(255, 255, 255, 0.07) 0%,
+      transparent 60%
+    );
+    pointer-events: none;
+    z-index: 10;
+    opacity: 0;
+    transition: opacity v.$transition-base;
+  }
+
+  &:hover::after {
+    opacity: 1;
+  }
+
+  &:hover {
+    box-shadow:
+      0 24px 64px rgba(0, 0, 0, 0.65),
+      0 0 0 1px rgba(v.$color-accent, 0.18);
+
+    .movie-card__overlay {
+      opacity: 1;
+    }
+
+    .movie-card__info {
+      opacity: 0;
+      transition: opacity 0.1s;
+    }
+  }
+
+  // ── Poster wrapper (fills entire card) ───────────────────────────────────
+  &__poster-wrap {
+    @include m.button-reset();
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  &__poster {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transform: translateZ(0);
+  }
+
+  // ── Rating badge ─────────────────────────────────────────────────────────
+  &__rating {
+    position: absolute;
+    top: v.$space-sm;
+    right: v.$space-sm;
+    padding: 3px v.$space-xs;
+    border-radius: v.$radius-pill;
+    font-size: v.$font-size-xs;
+    font-weight: 700;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    letter-spacing: 0.02em;
+    z-index: 3;
+
+    &--high {
+      background: rgba(v.$color-success, 0.25);
+      color: v.$color-success;
+      border: 1px solid rgba(v.$color-success, 0.4);
+    }
+
+    &--mid {
+      background: rgba(v.$color-star, 0.2);
+      color: v.$color-star;
+      border: 1px solid rgba(v.$color-star, 0.35);
+    }
+
+    &--low {
+      background: rgba(v.$color-error, 0.2);
+      color: #ff8fa3;
+      border: 1px solid rgba(v.$color-error, 0.35);
+    }
+  }
+
+  // ── Hover overlay (overview + genres + add button) ────────────────────────
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(v.$color-bg, 0.1) 0%,
+      rgba(v.$color-bg, 0.7) 40%,
+      rgba(v.$color-bg, 0.96) 100%
+    );
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: v.$space-md;
+    padding-bottom: v.$space-lg;
+    gap: v.$space-xs;
+    opacity: 0;
+    transition: opacity v.$transition-slow;
+    z-index: 2;
+  }
+
+  &__genre-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: v.$space-2xs;
+  }
+
+  &__genre {
+    padding: 2px v.$space-xs;
+    border-radius: v.$radius-pill;
+    background: rgba(v.$color-purple-light, 0.18);
+    border: 1px solid rgba(v.$color-purple-light, 0.25);
+    color: v.$color-purple-light;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  &__overview {
+    @include m.truncate(3);
+    font-size: v.$font-size-xs;
+    color: v.$color-text;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  &__add-btn {
+    @include m.btn-outline();
+    padding: v.$space-xs v.$space-md;
+    font-size: v.$font-size-xs;
+    border-radius: v.$radius-md;
+    margin-top: v.$space-xs;
+    width: 100%;
+    border-radius: v.$radius-md;
+  }
+
+  // ── Bottom info bar (always visible, slides up on hover) ─────────────────
+  &__info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: v.$space-2xl v.$space-md v.$space-sm;
+    background: linear-gradient(to top, rgba(v.$color-bg, 0.92) 0%, transparent 100%);
+    transform: translateY(0);
+    transition: transform v.$transition-base;
+    z-index: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: v.$space-xs;
+
+    // hide when overlay is open (overlay has higher z-index)
+    .movie-card:hover & {
+      opacity: 0;
+      transition: opacity 0.1s;
+    }
+  }
+
+  &__title {
+    @include m.truncate(2);
+    font-size: v.$font-size-sm;
+    font-weight: 700;
+    color: v.$color-text;
+    margin: 0;
+    flex: 1;
+    line-height: 1.3;
+  }
+
+  &__year {
+    font-size: v.$font-size-xs;
+    color: v.$color-text-muted;
+    font-weight: 600;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+}

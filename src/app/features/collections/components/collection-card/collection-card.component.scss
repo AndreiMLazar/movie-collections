@@ -1,0 +1,194 @@
+@use '../../../../../styles/variables' as v;
+@use '../../../../../styles/mixins' as m;
+
+.collection-card {
+  @include m.glass();
+  border-radius: v.$radius-lg;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  transition:
+    transform v.$transition-base,
+    box-shadow v.$transition-base;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+  }
+
+  &__link {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+
+    &:focus-visible {
+      outline: 2px solid v.$color-accent;
+      outline-offset: -2px;
+    }
+  }
+
+  // ── Poster preview strip ─────────────────────────────────────────────────
+  &__preview {
+    display: flex;
+    height: 130px;
+    overflow: hidden;
+    border-bottom: 1px solid rgba(v.$color-purple-light, 0.1);
+    background: v.$color-bg;
+    flex-shrink: 0;
+  }
+
+  &__preview-img {
+    flex: 1;
+    min-width: 0;
+    height: 130px;
+    object-fit: cover;
+    flex-shrink: 0;
+    border-right: 1px solid rgba(v.$color-surface-2, 0.6);
+  }
+
+  &__preview-more {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: v.$color-surface-2;
+    font-size: v.$font-size-sm;
+    font-weight: 700;
+    color: v.$color-text-muted;
+    min-width: 44px;
+  }
+
+  &__preview-empty {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: v.$color-surface-2;
+    font-size: 2.5rem;
+  }
+
+  // ── Card body ────────────────────────────────────────────────────────────
+  &__body {
+    padding: v.$space-md;
+    display: flex;
+    flex-direction: column;
+    gap: v.$space-xs;
+    flex: 1;
+  }
+
+  &__name {
+    @include m.truncate(2);
+    font-size: v.$font-size-md;
+    font-weight: 700;
+    color: v.$color-text;
+    margin: 0;
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: v.$space-sm;
+  }
+
+  &__count {
+    font-size: v.$font-size-sm;
+    color: v.$color-text-muted;
+  }
+
+  &__rating {
+    font-size: v.$font-size-sm;
+    font-weight: 600;
+    color: v.$color-star;
+  }
+
+  &__genres {
+    display: flex;
+    flex-wrap: wrap;
+    gap: v.$space-2xs;
+  }
+
+  &__genre-chip {
+    padding: 2px v.$space-xs;
+    border-radius: v.$radius-pill;
+    background: rgba(v.$color-purple, 0.15);
+    border: 1px solid rgba(v.$color-purple-light, 0.25);
+    color: v.$color-purple-light;
+    font-size: v.$font-size-xs;
+    font-weight: 600;
+  }
+
+  &__created {
+    margin-top: auto;
+    font-size: v.$font-size-xs;
+    color: v.$color-text-subtle;
+  }
+
+  &__titles {
+    list-style: none;
+    margin: v.$space-xs 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__title-item {
+    display: flex;
+    align-items: baseline;
+    gap: v.$space-xs;
+    overflow: hidden;
+  }
+
+  &__title-name {
+    font-size: v.$font-size-xs;
+    color: v.$color-text-muted;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__title-year {
+    font-size: v.$font-size-xs;
+    color: v.$color-text-subtle;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+
+  // ── Delete button ────────────────────────────────────────────────────────
+  &__delete {
+    @include m.button-reset();
+    position: absolute;
+    top: v.$space-sm;
+    right: v.$space-sm;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(v.$color-surface-2, 0.9);
+    border-radius: v.$radius-md;
+    border: 1px solid rgba(v.$color-purple-light, 0.15);
+    font-size: v.$font-size-sm;
+    cursor: pointer;
+    opacity: 0;
+    transition:
+      opacity v.$transition-base,
+      background v.$transition-base;
+
+    .collection-card:hover & {
+      opacity: 1;
+    }
+
+    &:hover {
+      background: rgba(v.$color-error, 0.2);
+      border-color: rgba(v.$color-error, 0.3);
+    }
+
+    @include m.focus-ring();
+  }
+}
