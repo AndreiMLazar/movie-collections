@@ -2,70 +2,39 @@
 
 ## Folder structure
 
-The project uses a feature-based layout under `src/app/`:
+`src/app/features/` has two subdirectories: `movies/` and `collections/`. Each owns its state, components, services, and types. Shared UI (Spinner, ErrorBanner, EmptyState) and app-wide services (StorageService, API constants) are separate under `shared/` and `core/`.
 
-```
-src/app/
-├── core/            — app-wide services (StorageService) and constants (API base URL, storage key)
-├── features/
-│   ├── movies/      — TMDB service, NgRx state, movies page, movie card, search, modals
-│   └── collections/ — NgRx state, collection list page, collection detail page, card, modals
-└── shared/          — Spinner, ErrorBanner, EmptyState components and shared types
-```
-
-Each feature has its own `state/`, `components/`, `services/`, and `types/` subdirectories. The `movies` feature does not import from `collections` state and vice versa. The one exception is `AddToCollectionModalComponent`, which lives under `movies/components/` but dispatches `CollectionsActions` — that crossing is intentional and limited to a single dispatch call.
+The one cross-feature dependency is `AddToCollectionModalComponent`. It lives in `movies/` but dispatches a collections action. I kept it there because it's triggered from the movies page, and the coupling is a single dispatch call, not a structural one.
 
 ---
 
-## State: NgRx vs signals
+## State vs component state
 
-Shared and persistent data goes in NgRx. Modal open/close and other transient UI state stays as component signals.
+NgRx holds anything that outlives a single component or needs to be persisted: the movies list, pagination, search query, loading state, and all collection data. Whether a modal is open or which movie was clicked stays in a local signal.
 
-NgRx covers the movies list, pagination, search query, loading and error state, and all collection data (movie IDs, movie snapshots, sort order). Signals cover whether a modal is open, which movie was clicked, and debounce state inside the search component.
-
-The split keeps the NgRx action log useful. Opening a modal should not appear there. Signals also work cleanly with `ChangeDetectionStrategy.OnPush` without needing an `async` pipe.
+I kept modal state out of NgRx because the action log becomes noise if it records "user opened modal." Signals are also easier to reason about when there are no side effects involved.
 
 ---
 
-## Effects and API integration
+## Handling persistence
 
-The movies feature has three functional effects in one file. `loadPopularMovies` and `searchMovies` both use `switchMap` so a new request cancels any in-flight one. `applyFiltersEffect` handles genre/sort changes and re-fetches. There is also a `loadMore` effect that uses `exhaustMap` to ignore rapid repeated clicks.
+After every mutating collections action (create, delete, add, remove, sort change), a `persistCollections` effect writes to localStorage. On startup, `loadCollectionsFromStorage` reads it back and dispatches one hydration action.
 
-The collections feature has two effects. `loadCollectionsFromStorage` runs once on startup and dispatches the stored data into the store. `persistCollections` listens for any mutating action and writes the current state to localStorage after every change. Both use the `{ functional: true }` pattern with `inject()`.
-
----
-
-## Persistence
-
-Collections are written to localStorage after every mutating action (create, delete, add movie, remove movie, sort change) via the `persistCollections` effect. On app start, `loadCollectionsFromStorage` reads from storage and dispatches the result.
-
-The reducer handles a migration case: if a collection was saved before the `movieDetails` field was added to the model, the missing field defaults to an empty array on load. This prevents old stored data from breaking the detail page.
+The reducer handles old stored data: any collection missing `movieDetails` gets it defaulted to `[]` on load. Added this after I changed the model mid-development, and it saved me from having to wipe localStorage manually.
 
 ---
 
-## Trade-off: movie data snapshot vs live lookup
+## Trade-off: snapshot vs live lookup
 
-When a movie is added to a collection, the action carries a full `CollectionMovie` snapshot (title, poster path, rating, genres, release date). The reducer stores this in `movieDetails: CollectionMovie[]` on the collection.
+When a movie is added to a collection, I store a snapshot of its data (title, poster, rating, genres, release date) directly on the collection. The detail page reads from that.
 
-The alternative is looking up a movie by ID in the movies NgRx slice. That does not work reliably because the slice only holds the current paginated page. Searching or loading more discards earlier pages. Caching every fetched movie or making a separate API call per movie in the detail page would both work but add complexity that is not justified for this scope.
-
-The snapshot duplicates data and goes stale if TMDB updates metadata. In a production feature I would add a per-movie endpoint call in the collection detail page instead, and only fall back to the snapshot when the call fails.
+The other option is looking up movies by ID in the movies NgRx slice, but that slice only holds the current page. Navigate away or search, and the data is gone. Caching every fetched movie would work but felt out of scope. The snapshot is stale if TMDB changes its data, which I'm fine accepting here. In a real feature I'd hit a per-movie endpoint from the detail page instead.
 
 ---
 
-## Animation
+## Trade-off: API filtering vs client-side filtering
 
-Both modal components use Angular 21's compiler-native animation API. The `.modal-backdrop` element carries `animate.enter="modal-enter"` and `animate.leave="modal-leave"` attributes. The named CSS classes are defined in each component's SCSS file alongside the `@keyframes` blocks. No `provideAnimations()`, no `@angular/animations` imports, no trigger syntax.
+Genre filtering and sort order go through TMDB's `/discover/movie` endpoint. The params are passed as query strings and the API returns an already-filtered page. The alternative was fetching everything and filtering in the reducer or a selector.
 
----
+I went with the API approach because the movie list is paginated. If you load 20 movies and filter client-side, you're filtering 20 results, not the full catalogue. The API knows about all 500,000 movies; the client doesn't. The cost is an extra network request every time a filter changes, but that's the right trade-off when the dataset doesn't fit in memory. I'd only consider client-side filtering if the full dataset was small enough to fetch once upfront.
 
-## Path aliases
-
-| Alias | Resolves to |
-|---|---|
-| `@core/*` | `src/app/core/*` |
-| `@features/*` | `src/app/features/*` |
-| `@shared/*` | `src/app/shared/*` |
-| `@env/*` | `src/environments/*` |
-
-Configured in both `tsconfig.json` and `jest.config.ts` (`moduleNameMapper`).
