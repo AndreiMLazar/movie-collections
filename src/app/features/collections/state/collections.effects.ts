@@ -22,10 +22,13 @@ export class CollectionsEffects {
   private readonly storage = inject(StorageService);
 
   /** On app init, hydrate state from localStorage */
-  loadCollectionsFromStorage$ = createEffect(() => {
-    const collections = this.storage.loadCollections();
-    return of(CollectionsActions.loadCollectionsFromStorage({ collections }));
-  }, { dispatch: true });
+  loadCollectionsFromStorage$ = createEffect(
+    () => {
+      const collections = this.storage.loadCollections();
+      return of(CollectionsActions.loadCollectionsFromStorage({ collections }));
+    },
+    { dispatch: true }
+  );
 
   /** After every mutating action, persist to localStorage */
   persistCollections$ = createEffect(

@@ -31,6 +31,10 @@ export const MoviesApiActions = createActionGroup({
   events: {
     [MOVIES_API_EVENT_LOAD_SUCCESS]: props<{ movies: Movie[]; page: number; totalPages: number }>(),
     [MOVIES_API_EVENT_LOAD_FAILURE]: props<{ error: string }>(),
-    [MOVIES_API_EVENT_APPEND_SUCCESS]: props<{ movies: Movie[]; page: number; totalPages: number }>(),
+    [MOVIES_API_EVENT_APPEND_SUCCESS]: props<{
+      movies: Movie[];
+      page: number;
+      totalPages: number;
+    }>(),
   },
 });
