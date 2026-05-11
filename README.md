@@ -40,7 +40,7 @@ npm install
 Create a `.env` file in the project root:
 
 ```env
-TMDB_API_KEY=your_api_key_here
+NG_APP_TMDB_API_KEY=your_api_key_here
 ```
 
 `scripts/set-env.js` injects this value as a global constant at build time, replacing the `TMDB_API_KEY` placeholder in `src/environments/environment.ts`. The `.env` file is in `.gitignore` and is never committed.

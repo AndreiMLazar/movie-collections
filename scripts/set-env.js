@@ -27,10 +27,10 @@ if (fs.existsSync(envPath)) {
   }
 }
 
-const tmdbApiKey = env['NG_APP_TMDB_API_KEY'] ?? '';
+const tmdbApiKey = env['NG_APP_TMDB_API_KEY'] || 'MISSING_API_KEY';
 
-if (!tmdbApiKey) {
-  console.warn('[set-env] WARNING: NG_APP_TMDB_API_KEY is not set in .env');
+if (!env['NG_APP_TMDB_API_KEY']) {
+  console.warn('[set-env] WARNING: NG_APP_TMDB_API_KEY is not set in .env — using placeholder (app cannot reach TMDB)');
 }
 
 // All arguments after the script name are forwarded to `ng`.
@@ -49,7 +49,6 @@ console.log(`[set-env] Launching ng ${forwardArgs[0]} with build-time define (no
 
 const proc = spawn('npx', args, {
   stdio: 'inherit',
-  shell: true,
   cwd: root,
 });
 
